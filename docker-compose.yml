@@ -1,0 +1,16 @@
+version: '2'
+services:
+ cassandra:
+    image: cassandra
+    volumes:
+     - /var/opt/docker/cassandra:/var/lib/cassandra
+    container_name: my-cassandra
+    mem_limit: 1G
+ rails:
+    build: ./webapp
+    image: my-rails
+    container_name: my-rails
+    ports: 
+     - "8080:3000" 
+    depends_on:
+     - cassandra
