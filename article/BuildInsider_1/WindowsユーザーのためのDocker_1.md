@@ -74,7 +74,7 @@ Chocolateyのインストールする前に、PowerShellの実行ポリシーが
 
 > 以下 **PS>**や**CMD>** はプロンプトを意味している。実際の入力に当たっては PS> より後の部分を入力すること。
 
-```SH
+```Powershell
 #実行ポリシーの確認
 PS> Get-ExecutionPolicy
 #実行ポリシーの設定
@@ -90,7 +90,7 @@ PS> choco
 Azureの各種サービスを操作するために、Azure-cliを動作させるための実行環境としてnode.jsおよびnpmをインストールする。
 すでに、Microsoft Web PIなどでインストール済みであれば次のステップへ。
 
-```SH
+```Powershell
 #node.jsのインストール
 PS> choco install node.js
 #npmのインストール
@@ -106,7 +106,7 @@ CMD> npm
 
 Azureの管理ツールをインストールする。Azure Dockerホストを作成するためには、Azure-cliが必須である。
 
-```SH
+```Powershell
 #Azure-cliのインストール
 CMD> npm install -g azure-cli
 #azure-cliの動作確認
@@ -118,7 +118,7 @@ CMD> azure help
 DockerコンテナをクライアントPCから操作する場合にインストールが必要である。
 Dockerホストにアクセスして、直接Dockerコンテナを操作する場合は、インストール不要だがインストールしておくことを推奨する。
 
-```SH
+```Powershell
 #Dockerクライアントのインストール
 PS> choco install docker
 #Dockerクライアントの動作確認
@@ -130,7 +130,7 @@ PS> docker help
 Dockerホストに接続するために必要。Dockerホスト上でのストレージデバイスのマウントや、Dockerコンテナ用のディレクトリの作成など、
 Dockerクライアントからは操作できないことは、Dockerホストに接続して実施する必要がある。
 
-```SH
+```Powershell
 #puttyのインストール
 PS> choco install putty
 #puttyの動作確認
@@ -140,6 +140,139 @@ PS> putty
 --------
 
 ## Dockerホストの作製
+
+ツールのインストールができたら、Docker環境を構築する。
+Dockerを使用するためには、Dockerホストを用意しなければならない。現時点のAzureでは、DockerホストとしてLinux仮想マシンを使用することができる。
+仮想マシンの作成には、Azure-cliを使用する。以下、順を追って説明する。
+
+### Azureログイン
+
+まず初めに、Azure-cliでログインをする。以下の```CMD> azure login```を実行し、出力されたURLと認証コードを確認する。
+![Azure login](./azure-cli-login.JPG "Azure login")
+
+出力されたURLを、ブラウザで開くと、以下のような画面になるので、先ほどの認証コードを入力する。
+![Azure device login1](./azure-device-login.JPG "Azure device login1")
+
+認証コードが正しい場合、端末からのアクセスを許容するかどうか質問されるので、「続行」ボタンを押す。
+![Azure device login2](./azure-device-login2.JPG "Azure device login2")
+
+さらに、Azureの認証アカウントを選択する。
+![Azure device login3](./azure-device-login3.JPG "Azure device login3")
+
+認証が成功すると以下のような画面になる、ブラウザを閉じ、Azure loginの結果を確認する。
+![Azure device login4](./azure-device-login4.JPG "Azure device login4")
+![Azure cli login2](./azure-cli-login2.JPG "Azure login2")
+
+### Azure VMイメージの確認
+
+Dockerホストを作製するための仮想マシンのOSイメージを選択する。```azure vm list```コマンドを実行し、
+**Ubuntu 14_04**のイメージの名称をメモする。また、```azure vm show```コマンドを実行することで
+仮想マシンの詳細を知ることができる。
+
+![azure vm images](./azure-vm-list.JPG "Azure VM list")
+
+> ここでは、Ubuntu 14を選択したが、CentOSやDebianも選択可能である。
+> なお、Microsoft のAzure関連のブログ記事では Ubuntuで説明されていることが多いため、特段の要件がなければUbuntuを選択するのが良いだろう。
+
+### Azure Docker ホストの作製
+
+いよいよDockerホストを作成する。本稿では、Dockerコンテナをロードできるまでを説明するため、デフォルト構成でホストを作製する。
+
+```PowerShell
+#Azure Dockerホスト作成コマンド
+azure vm docker create -e 22 -l "Japan East" [ホスト名] "仮想マシンイメージ" [仮想マシンの管理ユーザ] [管理ユーザのパスワード]
+```
+
+ここでは以下のように設定した。４～５分程度でVMが生成される。
+
+|パラメータ|値|
+|---|---|
+|ホスト名|BldinsDcrHst|
+|仮想イメージ|b39f27a8b8c64d52b05eac6a62ebad85__Ubuntu-14_04_5-LTS-amd64-server-20160830-en-us-30GB|
+|管理ユーザ名|builder|
+|パスワード|Bu!lder123|
+
+![Azure docker host create](./docker-host-create.JPG "Azure docker host create")
+
+実際に、Dockerを活用するためには、どのようなDockerコンテナをロードするのか、各コンテナはどのくらいのCPUリソース、メモリを消費するのかを
+見極めたうえで、Dockerホストのスペックを決める必要がある。
+
+> 例えば、一般的なWebアプリケーション環境を構築するのであれば、Webサーバ、アプリケーションサーバ、データベースの
+> 3つのコンテナをロードするのが一般的だろう。複数のコンテナを組み合わせて、環境を構築する手順については、第3回で解説する予定である。
+
+### Dockerホストの確認
+
+ホストが生成されたかどうかを確認する。```azure vm list```コマンドで、ホスト名が表示されているか確認し、
+```azure vm show```コマンドで仮想マシンの状態を確認する。
+
+```PowerShell
+#Azure VMの一覧取得
+CMD> azure vm list
+#VMの詳細
+CMD> azure vm show BldinsDcrHst
+```
+
+![Azure docker host show](./docker-host-show.JPG "Azure docker host show")
+
+### Dockerホストへの接続と、SSH暗号化キーの作製
+
+Azure Dockerホストにログインできるか確認する。puttyを起動（```putty```コマンドを実行）し、接続先情報を設定する。
+Hostnameに先ほど確認した、ホストのFQDNを入力、Saved Sessionsに任意の接続名を入力して、「Save」ボタンを押下する。
+
+![Putty config](./putty1.JPG "Putty config")
+
+「OK」ボタンを押すと、仮想マシンに接続する。Dockerホストを作成時に指定した、ユーザ名とパスワードを入力し接続できるか確認する。
+
+![Putty login](./putty3.JPG "Putty login")
+
+この仮想マシンは初めから、Dockerホストとして構成されており、追加パッケージをインストールすることなく、Dockerコマンドを実行可能である。
+試しに、Dockerの環境情報を取得し、ログアウトする。
+
+```SH
+# Docker環境情報の確認
+SSH> docker info
+# 仮想マシンからログアウト
+SSH> exit
+```
+
+このままでも運用は可能だが、認証がパスワードだけというのは心細い、セキュリティを強化するためにSSHキーペアを作成する。
+
+```CMD
+CMD> puttygen
+```
+
+![Putty ssh keygen](./putty-ssh1.JPG "Putty ssh keygen")
+
+「Generate」ボタンを押下し、Keyの領域で以下のような画面になるまでマウスを動かす。
+生成されたキーペアはそれぞれ、後の認証で使用するので、「key passphrase（開錠のためのパスワード）」を入力し、
+「Save public key」「Save private key」を押下して、ファイルとして保存すること。
+
+![Putty ssh keyseve](./putty-ssh3.JPG "Putty ssh keysave")
+
+つぎに、Azure Portalにアクセスし、作成した仮想マシンを選択し、パスワードのリセットを選択、ユーザ名に管理ユーザ名、認証の種類として
+**SSH公開鍵**を選択し、puttygenで生成されたpublicキーを入力する。
+
+![Putty ssh publickey set](./putty-ssh4.JPG "Putty ssh publickey set")
+
+仮想マシンのパスワードがリセットされたら、puttyの接続設定を修正する。
+puttyを起動し、接続設定画面が表示されたら、「Connection-SSH-Auth」を選択し、
+Privte key file for authenticagtionに、puttygenで生成した秘密鍵のファイルパスを指定する。
+
+![Putty ssh privatekey set](./putty-ssh5.JPG "Putty ssh privatekey set")
+
+SSH秘密鍵を指定すると、ログイン時に秘密鍵に対するパスワードを聞いてくるので、puttygenでキーペアを
+生成したときに入力したパスワードを入力するとログインできる。
+
+![Putty ssh login by sshkey](./putty-ssh6.JPG "Putty ssh login by sshkey")
+
+> ここで生成した、鍵ファイルとパスワードは大切に保管しなければならない。
+> これらがないと、ログインできなくなってしまうため、鍵ファイルを削除またはパスワードを忘れた場合には、
+> もう一度、SSHキーペアの作製と、仮想マシンのパスワードリセットが必要になる。
+
+> 逆に言えば、秘密鍵ファイルとパスワードがあれば、仮想マシンにアクセスできるので、秘密鍵ファイルを
+> 外部から参照できるようなところに置いてはいけない。
+
+
 
 --------
 
