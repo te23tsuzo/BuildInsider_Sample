@@ -4,6 +4,6 @@
     "version": "0.1.0",
     "command": "marked",
     "isShellCommand": true,
-    "args": ["article/BuildInsider_1/WindowsユーザーのためのDocker_1.md", "-o", "article/BuildInsider_1/BuildInsider_1.html"],
+    "args": ["article/BuildInsider_1/WindowsユーザーのためのDocker_1.md", "-o", "article/BuildInsider_1/WindowsユーザーのためのDocker_1.html"],
     "showOutput": "always"
 }

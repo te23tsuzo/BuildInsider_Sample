@@ -392,8 +392,13 @@ CMD> azure vm list
 ```
 ![Docker host Shutdown](./azure-vm-shutdown.JPG "Docker host Shutdown")
 
-#まとめ
+# 最後に
 
+Azureクラウド環境に、Dockerホストを作成し、Dockerコンテナを起動、最後にDockerクライアントを使って、Dockerコンテナの停止までを
+Windows - Azureクラウドの組み合わせで実施できることを解説した。
+今回は、コンテナを単独で動かすところまでしか紹介できていないが、実際のDockerの活用シーンとしてはWeb-App-Dbのそれぞれに
+コンテナを用意し、個別にまたはまとめてコンテナを起動・停止することが求められてくる。
 
-
+次回は、分散キーストアである、```Cassandra```のコンテナを使い、複数コンテナの起動、コンテナ間の通信、
+複数のDockerホストをまたがったDockerコンテナのロードについて解説する予定である。
 

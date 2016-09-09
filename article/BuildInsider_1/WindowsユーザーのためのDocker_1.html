@@ -8,34 +8,40 @@
 チームに参画するメンバーすべてが一様に整備できるかというと、実際にはそんなことはなく、
 できるメンバーがつきっきりで、環境を構築することが多いのではないだろうか。</p>
 <p>またはテストも完了し、運用環境へのデプロイ作業を運用メンバーに依頼したが、システムが正しく作動せず、
-結局開発メンバーがデプロイ作業を実施するなどして、お互いに不信感を持ってしまうということが発生していないだろうか。
-これらの問題が発生する原因の一つには、環境整備は属人的な側面が多大にあり、たとえマニュアルを整備したとしても、
-マニュアルの整備がおいつかず結果として、上記のような問題が発生しているものと思われる。<em>マニュアル</em>の代わりに<em>スクリプト</em>と置き換えても、同じことが言えるだろう。</p>
+結局開発メンバーがデプロイ作業を実施するなどして、お互いに不信感を持ってしまうということが発生していないだろうか。</p>
+<p>これらの問題が発生する原因の一つには、環境整備には属人的な側面が多大にあり、たとえ完璧なマニュアルを整備したとしても
+実際には、「予想外のことが起きて環境整備が完了しない」、「環境差異が発生してシステムが動かない」といったことがあり
+わかる人間が都度対応せざるを得ないということ、そもそも完璧なマニュアルを作るということ自体が至難の業であるといえるだろう。</p>
 <p>では、環境をより簡単に整備するにはどうしたらよいだろうか。環境を丸ごととっておき、それを必要に応じて使用できれば良いのではないだろうか。
 環境を丸ごとコピーするという考え方自体は昔からある考え形であり、仮想マシンを活用すれば仮想マシンごと丸ごとコピーして、データセンターのホストや、
 クラウドサービスにデプロイできるのはご存じのとおりである。</p>
-<p>　Dockerもまた、環境を丸ごとDockerコンテナとして管理することができ、コンテナをコピーしてDockerホストにデプロイするということができる。
-では、Dockerコンテナと仮想マシンは何が違うのか。一つには、Dockerコンテナは「必要最小限で構成された軽量のイメージであり、より少ないリソースで稼働できる」があげられるが、
-これ以外にもDockerには、“コンテナをスタックする”、“コンテナをリポジトリで管理する”といった、コンテナのカスタマイズ・デプロイに特化した機能があり、
-仮想マシンにはないメリットがある。</p>
+<p>　Dockerもまた、環境を丸ごとDockerコンテナとして管理することができ、DockerコンテナをコピーしてDockerホストにデプロイするということができる。
+では、Dockerコンテナと仮想マシンは何が違うのか。</p>
+<p>一つには、Dockerコンテナは「必要最小限で構成された軽量のイメージであり、より少ないリソースで稼働できる」があげられるが、
+これ以外にもDockerには、“コンテナをスタックする”、“コンテナをリポジトリで管理する”といった、
+カスタマイズ・デプロイに特化した機能があり、CI(継続的インテグレーション)を実現するための重要なテクノロジであると注目されている。</p>
+<p>従来はDockerを使うためにLinuxの知識が不可欠であったが、Azureクラウド環境を活用して、より容易にDockerを使えるようになった。
+本稿では、WindowsユーザーがDockerホストを作成し、Dockerコンテナをロードするまでの手順を説明する。</p>
 <blockquote>
-<p>本稿では、Dockerのシステム構成については触れない。Dockerホスト、Dockerコンテナの
+<p>本稿では、Dockerのシステムアーキテクチャーについては触れていない。Dockerホスト、Dockerコンテナの
 詳細については　<a href="https://www.docker.com/what-docker">What is Docker</a>　を参照のこと。</p>
 </blockquote>
-<p>従来はDockerを使うためにLinuxの知識が不可欠であったが、Azureクラウド環境を活用して、
-より容易にDockerを使えるようになった。本稿では、WindowsユーザーがDockerホストを作成し、Dockerコンテナをロードするまでの手順を説明する。</p>
 <hr>
 <h2 id="-">前準備</h2>
-<p>本稿では、DockerホストとしてAzure上のLinuxのVMを使用する。Linuxではあるが、ほとんどの設定をWindowsのコマンドから実行できるため、Linuxの知見がなくても問題ない。</p>
+<p>本稿では、DockerホストとしてAzure上のLinuxの仮想マシンを使用する。Linuxではあるが、ほとんどの設定をWindowsのコマンドから実行できるため、Linuxの知見がなくても問題ない。</p>
 <blockquote>
 <p>Windows Server 2016ではDockerホストの機能が提供される予定だが、
-執筆時点ではDockerホストとして、Windows Server 2016を選択することができない。</p>
+執筆時点ではDockerホストとして、Windows Server 2016を選択することができない。
+Windows Server 2016でのDocker利用については、Windows Server 2016リリース後にあらためて説明する。</p>
 </blockquote>
 <p>Dockerホストを構築する前に、以下の準備が必要である。</p>
 <ul>
-<li>Microsoft Azureアカウント<br>アカウントのアクティベーションについては、ｘｘ参照。</li>
-<li>クライアントPC<br>本稿ではWindows 10で操作しているが、Windows7/8/8.1でも動作可能。</li>
-<li>インターネット接続環境<br>各種ツールのインストールおよび、Dockerコンテナを操作するためにインターネットへの接続環境が必要である。プロキシ経由での接続については本稿では扱わない。</li>
+<li>Microsoft Azureアカウント
+アカウントのアクティベーションについては、<a href="https://azure.microsoft.com/ja-jp/free/">無料の Azure アカウントを今すぐ作成しましょう</a>を参照のこと。</li>
+<li>クライアントPC
+本稿ではWindows 10で操作しているが、Windows7/8/8.1でも動作可能。</li>
+<li>インターネット接続環境
+各種ツールのインストールおよび、Dockerコンテナを操作するためにインターネットへの接続環境が必要である。プロキシ経由での接続については本稿では扱わない。</li>
 </ul>
 <p>作業を進める中で、シェルを頻繁に変更する。記事中以下の表記が出てきたときは、それぞれシェルを使い分けていることに注意。</p>
 <table>
@@ -50,17 +56,17 @@
 <tr>
 <td>PS&gt;</td>
 <td>PowerShell</td>
-<td>スタート→”PowerShell”で検索→アイコンを右クリックし「管理者として実行」</td>
+<td>スタート→”PowerShell”を検索→アイコンを右クリックし「管理者として実行」</td>
 </tr>
 <tr>
 <td>CMD&gt;</td>
 <td>コマンドプロンプト</td>
-<td>スタート→”CMD”で検索→クリック</td>
+<td>スタート→”CMD”を検索→クリック</td>
 </tr>
 <tr>
 <td>SSH&gt;</td>
 <td>Putty SSHセッション</td>
-<td>コマンドプロンプトから”putty”を入力して起動</td>
+<td>PowerShellまたはコマンドプロンプトから”putty”を入力して起動</td>
 </tr>
 </tbody>
 </table>
@@ -193,8 +199,8 @@ azure vm docker create -e 22 -l &quot;Japan East&quot; [ホスト名] &quot;仮�
 3つのコンテナをロードするのが一般的だろう。複数のコンテナを組み合わせて、環境を構築する手順については、第3回で解説する予定である。</p>
 </blockquote>
 <h3 id="docker-">Dockerホストの確認</h3>
-<p>ホストが生成されたかどうかを確認する。<code>azure vm list</code>コマンドで、ホスト名が表示されているか確認し、
-<code>azure vm show</code>コマンドで仮想マシンの状態を確認する。</p>
+<p>ホストが生成されたかどうかを確認する。<code>azure vm list</code>コマンドで、ホスト名が表示されているか確認し、<code>azure vm show</code>コマンドで
+仮想マシンの状態を確認する。</p>
 <pre><code class="lang-PowerShell">#Azure VMの一覧取得
 CMD&gt; azure vm list
 #VMの詳細
@@ -240,6 +246,105 @@ Privte key file for authenticagtionに、puttygenで生成した秘密鍵のフ�
 外部から参照できるようなところに置いてはいけない。</p>
 </blockquote>
 <hr>
-<h2 id="docker-">Dockerコンテナのロード</h2>
+<h2 id="docker-">Dockerコンテナの起動</h2>
+<p>次にDockerコンテナを起動する。今回は、Dockerコンテナとして<strong>Nginxコンテナ</strong>を起動する。</p>
+<p>システムのイメージは以下のようになる。Azure Dockerホストを作成すると、Azureクラウドサービス、Azureストレージ、Azure仮想マシンのリソースが
+動的に割り当てられる。
+仮想マシンには、OSとしてUbuntuがロードされ、Dockerホストが起動される。
+さらに、Dockerホストに対して、Dockerコンテナの起動命令を出すことで、Dockerコンテナの読込と起動が行われる。</p>
+<p><img src="./docker-load-image.JPG" alt="Docker Load Image" title="Docker Load Image"></p>
+<p>まずは、SSHでDockerホストにアクセスし、以下のコマンドを実行し、Dockerのリポジトリ<code>Docker Hub</code>から取得できるコンテナを確認する。
+Nginxコンテナのイメージがいくつか見つかる。”OFFICIAL”列が”OK”となっているものが、Docker公式のnginxのイメージであり、今回取得する対象のイメージである。</p>
+<pre><code class="lang-SH">#DockerリポジトリでDockerコンテナを検索する
+SSH&gt; docker search nginx
+</code></pre>
+<p><img src="./docker-load-search.JPG" alt="Docker search" title="Docker Search"></p>
+<blockquote>
+<p>その他のイメージは、第三者がDocker Hubで公開しているイメージである。
+それぞれ個別のカスタマイズがされており、<a href="http://hub.docker.com">Docker Hub</a>にアクセスすることでその詳細を知ることができる。</p>
+</blockquote>
+<p>つぎに、Dockerコンテナを起動する。<code>docker run</code>コマンドを実行すると、Nginxコンテナイメージを取得し、Nginxコンテナが起動される。
+また、<code>docker ps</code>コマンドを実行すると、起動中のDockerコンテナの一覧を確認できる。</p>
+<p>起動に当たっては、以下のオプションを付与した。</p>
+<table>
+<thead>
+<tr>
+<th>オプション</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-d</td>
+<td>サービスとして起動</td>
+</tr>
+<tr>
+<td>-p ホストポート:コンテナのポート</td>
+<td>コンテナの指定ポートをホストのポートにマップする。このオプションを付与しないとDockerホストの外から参照することができない。</td>
+</tr>
+<tr>
+<td>--name</td>
+<td>起動したコンテナに名前を付ける。このオプションをつけないと、コンテナを管理するときにコンテナの見分けがつかない。</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="lang-SH">#Docker コンテナの起動例
+SSH&gt; docker run -d -p 8080:80 --name some-nginx nginx
+#起動中のDockerコンテナの一覧
+SSH&gt; docker ps
+</code></pre>
+<p><img src="./docker-load-run.JPG" alt="Docker run" title="Docker run"></p>
+<p>起動したnginxにアクセスするためには、Dockerホストのポート8080を開通させる必要がある。
+Dockerホストを作成したPCから<code>azure vm endpoint create</code>コマンドを実行する。</p>
+<pre><code class="lang-CMD">#Dockerホストのポート8080を開通する
+CMD&gt; azure vm endpoint create BldinsDcrHst 8080 
+#Dockerホストの開通しているポートの一覧を確認する
+CMD&gt; azure vm endpoint list BldinsDcrHst
+</code></pre>
+<p><img src="./docker-load-portopen.JPG" alt="endpoint create" title="endpoint create"></p>
+<p>ポート開通後は、ブラウザでアクセス可能になる。</p>
+<p><img src="./docker-load-browser.JPG" alt="browser access" title="browser access"></p>
+<p>ポート開通後は以下のような構成になる。
+Dockerコンテナのポート（80）をDockerホストのポート(8080)にマップしなければ、外部から接続できないことに注意。</p>
+<p><img src="./docker-load-portimage.JPG" alt="endpoint image" title="endpoint image"></p>
+<blockquote>
+<p>Dockerコンテナは起動されると、コンテナ間での通信のための仮想ネットワークに参加するが、
+そのままではDockerホストの外部から、仮想ネットワークにアクセスすることはできない。<br>外部からアクセス可能な条件は、 「コンテナが、任意のポートをExposeし」、かつ「コンテナ起動時にDockerホストのポートにマップ」することが必要である。<br>さらに、インターネット経由でAzure仮想マシンにアクセスするためには、仮想マシンのEndpoint登録が必要になる。</p>
+</blockquote>
 <hr>
 <h2 id="docker-">Dockerコンテナの停止</h2>
+<p>最後にDockerコンテナをクライアントPCから管理する方法を兼ねて、コンテナを停止させる方法を説明する。</p>
+<p>Dockerクライアントは、リモートからDockerホストに対してコンテナを管理することができる。
+Azure-cliを使って、Dockerホストを作成した場合、DockerクライアントとDockerホスト間でSSL通信を行い、
+Dockerホストをリモートから直接管理できるように構成される。</p>
+<p><img src="./docker-stop-image.JPG" alt="Docker stop" title="Docker stop"></p>
+<p>実際に、Dockerホストで稼働中のコンテナを確認するため<code>docker ps</code>コマンドを実行し、
+先に起動したnginxコンテナを停止するために、<code>docker stop</code>コマンドを実行してみる。</p>
+<pre><code class="lang-CMD">#リモートのDockerホストの実行中のコンテナを確認する
+CMD&gt; docker --tlsverify -H tcp://[対象のDockerホスト]:2376 ps
+#Dockerコンテナを停止させる
+CMD&gt; docker --tlsverify -H tcp://[対象のDockerホスト]:2376 stop [コンテナ名]
+#停止したか確認する
+CMD&gt; docker --tlsverify -H tcp://[対象のDockerホスト]:2376 ps
+</code></pre>
+<p><img src="./docker-client-ps.JPG" alt="Docker client ps" title="Docker ps"></p>
+<blockquote>
+<p>Dockerコンテナを止めるためには、Dockerコンテナの名前を使用する。（今回の例では &quot;some-nginx&quot;）
+もし、Dockerコンテナを起動するときに名前を付け忘れた場合は、CONTAINER IDを指定することでも操作できるのだが、
+コマンドからは対象のコンテナなのか判別できないことがあるため注意が必要である。</p>
+</blockquote>
+<p>Dockerコンテナを削除しても、仮想マシンが稼働している間は課金されてしまう。
+節約のため、Dockerコンテナの操作が終わったら仮想マシンを停止させる。</p>
+<pre><code class="lang-CMD">#Dockerホストを停止させる
+CMD&gt; azure vm shutdown BldinsDcrHst
+#停止したか確認する
+CMD&gt; azure vm list
+</code></pre>
+<p><img src="./azure-vm-shutdown.JPG" alt="Docker host Shutdown" title="Docker host Shutdown"></p>
+<h1 id="-">最後に</h1>
+<p>Azureクラウド環境に、Dockerホストを作成し、Dockerコンテナを起動、最後にDockerクライアントを使って、Dockerコンテナの停止までを
+Windows - Azureクラウドの組み合わせで実施できることを解説した。
+今回は、コンテナを単独で動かすところまでしか紹介できていないが、実際のDockerの活用シーンとしてはWeb-App-Dbのそれぞれに
+コンテナを用意し、個別にまたはまとめてコンテナを起動・停止することが求められてくる。</p>
+<p>次回は、分散キーストアである、<code>Cassandra</code>のコンテナを使い、複数コンテナの起動、コンテナ間の通信、
+複数のDockerホストをまたがったDockerコンテナのロードについて解説する予定である。</p>
