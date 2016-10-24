@@ -1,0 +1,26 @@
+version: '2'
+services:
+  cassandra-1:
+    image: cassandra
+    container_name: cassandra-1
+    environment:
+      CASSANDRA_BROADCAST_ADDRESS: "cassandra-1"
+    ports:
+    - 7000
+    restart: always
+  cassandra-2:
+    image: cassandra
+    container_name: cassandra-2
+    environment:
+      CASSANDRA_BROADCAST_ADDRESS: "cassandra-2"
+      CASSANDRA_SEEDS: "cassandra-1"
+    ports:
+    - 7000
+    depends_on:
+      - cassandra-1
+    restart: always
+
+networks:
+  default:
+    external:
+       name: overlay-net
