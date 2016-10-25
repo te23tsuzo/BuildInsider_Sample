@@ -26,11 +26,13 @@ services:
 
 volumes:
   cassandra-vol1:
-    external:
-      name: myvol1
+    driver: azurefile
+    driver_opts:
+      share: myshare
   cassandra-vol2:
-    external:
-      name: myvol2
+    driver: azurefile
+    driver_opts:
+      share: myshare2
 
 networks:
   default:
