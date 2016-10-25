@@ -213,7 +213,7 @@ SSH> sudo cp azurefile-dockervolumedriver.conf /ect/init
 # Azure Storegaアカウント情報を設定する
 SSH> sed s/youraccount/[Azure Storegeアカウント名]/ azurefile-dockervolumedriver.default > azurefile-dockervolumedriver.1
 SSH> sed s/yourkey/[Azure Storageアカウントキー]/ azurefile-dockervolumedriver.1 > azurefile-dockervolumedriver.2
-SSH> cp azurefile-dockervolumedriver.2 /etc/default/azurefile-dockervolumedriver
+SSH> sudo cp azurefile-dockervolumedriver.2 /etc/default/azurefile-dockervolumedriver
 ```
 
 > ここではAzure Storageアカウントを設定するときに、ここではsedを使ったが、Vimが使えるのであればVim等で

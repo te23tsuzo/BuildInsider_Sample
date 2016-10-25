@@ -7,6 +7,8 @@ services:
       CASSANDRA_BROADCAST_ADDRESS: "cassandra-1"
     ports:
     - 7000
+    volumes:
+      - "cassandra-vol1:/var/lib/cassandra"
     restart: always
   cassandra-2:
     image: cassandra
@@ -18,7 +20,17 @@ services:
     - 7000
     depends_on:
       - cassandra-1
+    volumes:
+      - "cassandra-vol2:/var/lib/cassandra"
     restart: always
+
+volumes:
+  cassandra-vol1:
+    external:
+      name: myvol1
+  cassandra-vol2:
+    external:
+      name: myvol2
 
 networks:
   default:
