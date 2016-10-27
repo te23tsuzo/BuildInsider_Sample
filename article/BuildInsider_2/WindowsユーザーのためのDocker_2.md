@@ -46,6 +46,7 @@ CMD> azure vm start "Dockerホスト名"
 ```
 
 つぎに、Dockerホスト上にCassandraコンテナを用意し、Cassandraコンテナをロードする。
+DockerホストにPuttyで接続し以下のコマンドを実行する。
 
 ```SSH
 # CassandraコンテナのイメージをPULLする
@@ -252,7 +253,7 @@ Docker Volume作成のオプションは以下の通り。
 | --name | ボリュームの名前 | Dockerコンテナでボリュームをマップするときに使用する名前 |
 | -d | Dockerボリュームドライバーを指定 | ここでは、Azure File Storageを使うため ```auzrefile```を指定した。 |
 | -o | Dockerボリュームドライバーの追加オプション |　このオプション以降はドライバー固有のオプションを指定する。 |
-| share=[共有名] | Azure File Storageの共有名を指定 | Azure File Storage上に作成されるボリュームの共有名を指定する。 |
+| share=<共有名> | Azure File Storageの共有名を指定 | Azure File Storage上に作成されるボリュームの共有名を指定する。 |
 
 AzurefileとしてDockerボリュームが生成されたことを確認できる。（赤枠内）
 [Azureポータルサイト](http;//portal.azure.com)では、以下のように選択すると確認できる。
@@ -365,12 +366,12 @@ Dockerコンテナクラスタを構築するための、大まかな手順は�
 - ACS操作のためのSSHトンネリングを設定
 - ACSにコンテナクラスターを配置
 
-ACSの配置に当たっては、Azure PortalサイトからACSのテンプレートを選択してサービスをデプロイする方法をとる。
+ACSの配置に当たっては、AzureポータルサイトからACSのテンプレートを選択してサービスをデプロイする方法をとる。
 以下順に手順を説明する。
 
 ### ACSテンプレートの選択
 
-[Azure Portalサイト](https://portal.azure.com)に接続し、「新規」→Marketplaceを検索のテキストボックスに
+[Azureポータルサイト](https://portal.azure.com)に接続し、「新規」→Marketplaceを検索のテキストボックスに
 "Azure Container Service"と入力すると、検索結果の一番上に今回使用するACSテンプレートが表示される。
 
 ![acs config1](./acs-config1.PNG)
@@ -426,8 +427,8 @@ ACS配置のための基本情報を入力する画面が現れるので、そ�
 > 今回は複数のホストで、複数のコンテナに分散してロードされる様子を確認するため、
 > "Standard A1"にサイズダウンしていることに注意。
 
-「OK」を押下すると構成を確認できる。エージェントノードのサイズや台数は、配置後にAzure PortalのGUIからは操作できないため、
-ここで確認をすることをお勧めする。
+「OK」を押下すると構成を確認できる。エージェントノードのサイズや台数は、配置後にAzureポータルサイトの
+GUIからは操作できないため、ここで確認をすることをお勧めする。
 
 ![acs config6](./acs-config6.PNG)
 
@@ -454,7 +455,7 @@ puttyを起動し、以下の設定を実施する。
 
 | 設定項目 | 設定値 | 説明 |
 | --- | --- | --- |
-| 接続先ホスト | [DNS prefix].[地域].azure.com | オーケストレーションの選択で入力した[DNS prefix for container service](#acs config4)と、リソース配置先の[地域](#acs config2)を指定する。|
+| 接続先ホスト | <DNS prefix>mgmt.<地域>.azure.com | オーケストレーションの選択で入力した[DNS prefix for container service](#acs config4)と、リソース配置先の[地域](#acs config2)を指定する。|
 | ポート | 2200 | SSHで接続するポート番号。"2200"固定 |
 | 秘密鍵のパス | マスタノードに接続するための秘密鍵 | リソース配置先の[SSH public key](#acs config2)で指定した公開鍵に対応する、秘密鍵のファイルパスを指定。|
 | ソースポート | 2375 | Dockerコマンドを受け付けるポート番号。"2375"固定 |
@@ -465,11 +466,11 @@ puttyを起動し、以下の設定を実施する。
 
 ![putty config2](./putty-config2.PNG)
 
-SSHトンネリングの指定。puttyを起動しSSH-Tunnelsタブの"Source Port, Destination"を指定し"Add"を押下する。
+SSHトンネリングの指定。SSH-Tunnelsタブの"Source Port, Destination"を指定し"Add"を押下する。
 
 ![putty config3](./putty-config3.PNG)
 
-接続先ホストとポートの指定。puttyを起動しSessionタブの"Host Name,Port"を指定する。
+接続先ホストとポートの指定。Sessionタブの"Host Name,Port"を指定する。
 "Saved Sessions"に接続のラベル（以下の例では"docker swarm"）をつけて"Save"を押下する。
 
 ![putty config1](./putty-config1.PNG)
@@ -490,7 +491,7 @@ Docker swarmが起動していることを確認できる。(上図、赤枠線�
 
 ```CMD
 # 秘密鍵をコピーする
-CMD> cp [秘密鍵のファイルパス] %USERPROFILE%\.docker\key.pem
+CMD> cp <秘密鍵のファイルパス> %USERPROFILE%\.docker\key.pem
 # 環境変数 DOCKER_HOSTの設定
 CMD> set DOCKER_HOST=:2375
 # docker infoの確認
@@ -577,24 +578,262 @@ Cassandraクラスタが起動し、それぞれのコンテナが別のエー�
 
 ![cassandra swarm struct](./docker-struct-cassandra-swarm.PNG)
 
-> 注：今回の記事ではACSのSwarmエージェントに対して、azurefile-dockerdriverをインストールできなかった。
-> 当初の予定では、Azureファイルストレージ上に作成したDockerボリュームをSwarmエージェント側でマウントし、
-> 先に作成したmykeyspaceの各テーブルを参照することを想定していた。次回更新のタイミングで追記したい。
+Cassandraコンテナクラスタに接続するにはdocker runを実行する。
+先ほど起動したCassandraコンテナのクラスタは、```Ovrlay-net```という名前で仮想ネットワーク
+を構築しているので、--networkオプションを追加して起動する。
 
-## Swarmマスター及びエージェントの停止
+```CMD
+# Cassandraクラスタに接続する
+CMD> docker run --it --link cassandra-1:cassandra --network overlay-net cassandra cqlsh cassandra
+```
 
-最後に、ACSで起動したSwarmマスターとエージェントの停止方法を説明する。
+> この時点では、Cassandraコンテナにストレージをマップしていないため、中身は空の状態である。
+> 各Cassandraコンテナにストレージをマップする方法は後述する。
+
+
+### Swarmマスター及びエージェントの停止
+
+次の操作に入る前に、ACSで起動したSwarmマスターとエージェントの停止方法を説明する。
 
 Swarmマスターを停止するには、Azure Potalサイトで今回作成したリソースグループ(本記事ではDCRCLSTR)を、
-選択し、swarm-master仮想マシンを選択してから、"停止"ボタンを押下する。
+選択し、swarm-master…仮想マシンを選択してから、"停止"ボタンを押下する。
 
 ![stop swarm master](./stop-swarm-master.PNG)
 
 Swarmエージェントを停止するには、同様にリソースグループを選択してから、
-swarm-agent仮想マシンのスケールセットを選択してから、"Deallocate"ボタンを押下する。
+swarm-agent…仮想マシンのスケールセットを選択してから、"Deallocate"ボタンを押下する。
 複数の仮想マシンがあっても、すべて一括で停止させることが可能である。
 
 ![stop swarm agent](./stop-swarm-agent.PNG)
+
+停止させたノードは各画面にある「開始」（または「Start」）ボタンをクリックすることで起動できる。
+
+ちなみに上記と同じ操作を、Azure-cliでも実現できる。
+Azure-cliをarmモードに変更し、Azure Resource Managerに対して命令を発行することで各リソースを
+操作することが可能である。
+
+```CMD
+# Swarmマスター(VM)の停止
+CMD> azure vm stop <リソースグループ> <仮想マシン名>
+# Swarmエージェント(VMSS)の停止
+CMD> azure vmss deallocate <リソースグループ> <仮想マシンスケールセット名> <スケールセット内のインスタンスID>
+```
+
+今回の環境であれば以下のように実行する。
+
+```CMD実行例
+CMD> azure vm stop dcrclstr swarm-master-5DDAC7BE-0
+CMD> azure vmss deallocate dcrclstr swarm-agent-5DDAC7BE-vmss *
+```
+
+### Swarmエージェントノードにストレージをマップする
+
+先ほど起動した、Cassandraクラスタの各ノードにストレージをマップして、
+Azure Fileストレージにデータを保存できるように構成を変更する。
+> なお、エージェントノードが十分なストレージを持っているような場合
+> であれば、以下の作業は不要である。あしからず。
+
+手順は以下の通り
+
+- 仮想マシンスケールセットの各ノードにSSH接続できるようにする
+- 仮想マシンスケールセットの各ノードにドライバーをインストールする
+- Cassandraコンテナ起動時にAzure Fileストレージをマップするように構成ファイルを修正する
+
+以下手順を説明する。
+
+#### 仮想マシンスケールセットの各ノードにSSH接続できるようにする
+
+仮想マシンスケールセット（VMSS）の各ノードにSSHで接続するために、ノードとインターネットを
+接続するためのポートを用意する必要がある。
+
+VMSSの各ノードにはPublicIPアドレスが用意されていないため、ノードに直接接続することは
+できないのだが、ノードとインターネットの間にロードバランサーが配置されているため、
+ロードバランサーにSSHポートの負荷分散規則を追加することでインターネットから
+VMSSのノードに接続することが可能である。具体的には以下の設定を実施する。
+
+Azureポータルサイトにアクセスし、
+リソースグループ'dcrclstr'を選択→
+ロードバランサー'swarm-agent-lb-xxxxxx'を選択→
+設定'プローブ'を選択→
+「追加」ボタンを押下し、以下の項目を入力してから「保存」ボタンを押下する。
+
+| 項目 | 値 | 説明 |
+| --- | --- | --- |
+| 名前 | tcpSSH | VMSSノードを監視するためのポート名称。tcp<ポート名>のような名称をつける |
+| プロトコル | TCP | 今回はSSHを負荷分散させたいため、TCPを選択する。|
+| ポート | 22 | 監視させるポート番号。SSHのポート番号である22を指定する。 |
+| 間隔 | 30 | VMSSノードに対して監視間隔を指定する。|
+| 異常しきい値 | 2 | 監視時にポートからの応答がない場合はエラーとしてカウントされる。ここで指定した回数回エラーが発生したらノードは非活性と判断される。 |
+
+引き続き、ロードバランサーの
+設定'負荷分散規則'を選択→
+「追加」ボタンを押下し、以下の項目を入力してから「保存」ボタンを押下する。
+
+| 項目 | 値 | 説明 |
+| --- | --- | --- |
+| 名前 | LBRuleSSH | 負荷分散のルール名。LBRule<ポート>名のような名称をつける |
+| Frontend IP address | swarm-agent-lbFrontEnd-xxxxxx | ロードバランサーに割り当てられているIPアドレスのリソース名。デフォルトのままでよい。|
+| プロトコル | TCP | 負荷分散対象のプロトコル種別を指定する。TCPのままでよい。|
+| ポート | 22 | 負荷分散対象のポートを指定する。今回はSSHのデフォルトポートである22を指定する。|
+| バックエンドポート | 22 | VMSSのノード側のポートを指定する。今回はSSHのデフォルトポートである22を指定する。|
+| バックエンドプール | swarm-agent-pool-xxxxxx | VMSSのプールを指定する。デフォルトのままでよい。|
+| プローブ | tcpSSH (TCP:22) | 先に登録したプローブを選択する。|
+| セッション永続化 | なし | 毎回、異なるノードに接続できるよう、'なし'のままとする。|
+| アイドルタイムアウト | 4 | 接続の維持間隔。デフォルトのままでよい。|
+
+![vmss config1](./vmss-config1.PNG)
+
+これでVMSSのロードバランサーを経由してVMSSのノードに接続できるようになった。
+
+#### 仮想マシンスケールセットの各ノードにドライバーをインストールする
+
+つぎに、各ノードにSSHで接続し[DockerコンテナにAzureストレージをマップする](#azure-storage)で
+行った手順を実施する。
+
+VMSSのノードを起動する必要があるが、ここではセットアップ対象の一つのノードを起動し、
+セットアップが完了したらノードを停止し、次のノードを起動するということを繰り返す。
+
+Azureポータルサイトにアクセスし、
+リソースグループ'dcrclstr'を選択→
+仮想マシンスケールセット'swarm-agent-xxxxxx-vmss'を選択→
+設定'Instances'を選択→
+仮想マシンの一覧から、任意のVMを一つ選びチェックしてから「Start」ボタンを押下する。
+
+![vmss config1](./vmss-config2.PNG)
+
+仮想マシンが起動したら、puttyを起動し以下の設定で接続する。
+
+> 内容は、SSHトンネリング設定とほぼ同じ。
+> 接続先ホストが<DNS prefix>mgmt.<地域>.azure.com から
+> <DNS prefix>agents.<地域>.azure.comに変わったことに注意。
+
+| 設定項目 | 設定値 | 説明 |
+| --- | --- | --- |
+| 接続先ホスト | <DNS prefix>agents.<地域>.azure.com | オーケストレーションの選択で入力した[DNS prefix for container service](#acs config4)と、リソース配置先の[地域](#acs config2)を指定する。|
+| ポート | 2200 | SSHで接続するポート番号。"2200"固定 |
+| 秘密鍵のパス | マスタノードに接続するための秘密鍵 | リソース配置先の[SSH public key](#acs config2)で指定した公開鍵に対応する、秘密鍵のファイルパスを指定。|
+| ソースポート | 2375 | Dockerコマンドを受け付けるポート番号。"2375"固定 |
+| 接続先 | localhost | SSHトンネリングの接続先ホスト名。"localhost"固定  |
+
+設定が終わったら、'Saved Session'に名前を付けて保存し、「Open」ボタンを押下し接続する。
+
+![vmss config3](./vmss-config3.PNG)
+
+接続のユーザ名およびパスワードは、先に実施したSSHトンネリングの指定と同じである。
+接続すると、SSHのプロンプトにマシン名が表示されている。（下図赤線内）
+
+あとは、[DockerコンテナにAzureストレージをマップする](#azure-storage)と同じ手順で
+azurefile-dockervolumedriverをインストールする。
+
+インストールが終わったら、puttyを終了し、Azureポータルサイトで先ほど起動した
+VMSSのノードを選択してから、「Deallocate」ボタンを押下し、今操作しているVMSSのノードを
+停止させる。
+
+![vmss config5](./vmss-config5.PNG)
+
+停止したことを確認したら、先ほどと同じ手順で次のVMSSノードを起動し、ドライバーを
+インストールする。
+
+#### Cassandraコンテナ起動時にAzure Fileストレージをマップするように構成ファイルを修正する
+
+VMSSの各ノードにドライバーがインストールされたので、CassandraコンテナにAzure Fileストレージを
+マップするように、Dockerの構成を変更する。
+
+先に保存した```cassandra-clstr.yml```を以下のように修正する。
+
+```YML (cassandra-clstr.yml)
+version: '2'
+services:
+  cassandra-1:
+    image: cassandra
+    container_name: cassandra-1
+    environment:
+      CASSANDRA_BROADCAST_ADDRESS: "cassandra-1"
+    ports:
+    - 7000
+    volumes:
+      - "cassandra-vol1:/var/lib/cassandra"
+    restart: always
+  cassandra-2:
+    image: cassandra
+    container_name: cassandra-2
+    environment:
+      CASSANDRA_BROADCAST_ADDRESS: "cassandra-2"
+      CASSANDRA_SEEDS: "cassandra-1"
+    ports:
+    - 7000
+    depends_on:
+      - cassandra-1
+    volumes:
+      - "cassandra-vol2:/var/lib/cassandra"
+    restart: always
+volumes:
+  cassandra-vol1:
+    driver: azurefile
+    driver_opts:
+      share: myshare
+  cassandra-vol2:
+    driver: azurefile
+    driver_opts:
+      share: myshare2
+networks:
+  default:
+    external:
+       name: overlay-net
+```
+
+この構成では、cassandra-1のコンテナに、cassandra-vol1のボリュームをマップし
+cassandra-2のコンテナに、cassandra-vol2のボリュームをマップしている。
+
+また、各ボリュームはコンテナが起動する前に、auzrefileストレージにDockerボリュームが
+あるかどうかを確認し、もし存在しなければDockerボリュームを作成してからストレージをマップ、
+もし存在すればそのボリュームをマップしてコンテナがロードされるようになる。
+
+動作確認をするため、今まで停止していたswarmマスターと、停止している残りのエージェントを、
+先に説明したswarmマスタおよびエージェントのインスタンス画面からそれぞれ起動してほしい。
+
+全ノードが起動したら、SSHトンネリングを開くため、puttyを起動しSwarmマスターに接続する。
+
+次に、以下のコマンドを実行し、Cassandraクラスタを停止させ初期化する。
+> すでにSwarmマスタ、エージェントを停止させているので、コンテナが停止された状態になっているが、
+> 念のためCassandraコンテナを停止＆削除しておく。
+> すでに停止しているコンテナを停止しようとすると、"No Such container: cassandra-1"といったエラーが
+> 発生するが、無視しても問題ない。
+
+```CMD
+# Cassandraクラスタの停止と削除
+CMD> docker stop cassandra-1 cassandra-2
+CMD> docker rm cassandra-1 cassandra-2
+```
+
+Cassandraコンテナの停止＆削除をしたのち、Cassandraコンテナを再度起動してみる。
+
+```CMD
+# Cassandraクラスタの起動
+CMD> docker-compose -f cassandra-yml up -d
+# Cassandraボリュームの一覧
+CMD> docker volume ls
+```
+
+![vmss config6](./vmss-config6.PNG)
+
+コンテナの起動と合わせて、ボリュームが作成されていることがわかる（上図赤線内）。
+今回の例では、エージェントノードが2つあるため、2つづつボリュームが生成されていることがわかる。
+
+構成は以下の通り。
+
+![docker struct cassandra cluster2](./docker-struct-cassandra-cluster2.PNG)
+
+
+なお、Cassandraコンテナを停止させる、または停止して削除するには、
+以下のコマンドを使用することが可能である。
+
+```CMD
+# Cassandraクラスタの停止（コンテナ削除まではしない）
+CMD> docker-compose -f cassandra-yml stop
+# Cassandraクラスタの停止と削除
+CMD> docker-compose -f cassandra-yml down 
+```
 
 # 最後に
 
