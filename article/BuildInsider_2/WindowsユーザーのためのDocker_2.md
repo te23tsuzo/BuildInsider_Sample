@@ -71,6 +71,7 @@ SSH> docker run -it --link some-cassandra:cassandra --rm cassandra cqlsh cassand
 ```
 
 ここで使用したオプションは以下の通り。いずれもよく使うオプションでありこの後の解説でも登場するので覚えてほしい。
+
 | オプション | 意味 | 説明 |
 | --- | --- | --- |
 | -it | 標準入力を受け入れる。 | cqlshのように、コンテナ起動後にユーザの何らかの入力を必要とする場合に指定する。 |
@@ -143,7 +144,7 @@ SSH> docker ps -a
 
 ![Docker stop cassandra](./docker-stop-cassandra.PNG)
 
-> Dockerコンテナを停止させると、STATUSが"EXIT"になるが、Dockerコンテナ自体は残ったままである。（上手の赤線部分）
+> Dockerコンテナを停止させると、STATUSが"EXIT"になるが、Dockerコンテナ自体は残ったままである。（上図の赤枠部分）
 > この状態で、同じ名前のコンテナを作成することはできない。
 > Dockerコンテナを作成しなおすためには、Dockerコンテナを削除する必要がある。
 
@@ -334,6 +335,8 @@ Node2はストレージをマップしていないが、Node2に接続しても�
 
 ![cassandra struct cluster1](./docker-struct-cassandra-cluster1.PNG)
 
+---
+
 ## Azure Container ServiceによるDocker swarm環境の構築
 
 ここまで、単一のDockerホストに複数のコンテナをロードする方法を見てきたが、
@@ -455,9 +458,9 @@ puttyを起動し、以下の設定を実施する。
 
 | 設定項目 | 設定値 | 説明 |
 | --- | --- | --- |
-| 接続先ホスト | <DNS prefix>mgmt.<地域>.azure.com | オーケストレーションの選択で入力した[DNS prefix for container service](#acs config4)と、リソース配置先の[地域](#acs config2)を指定する。|
+| 接続先ホスト | <DNS prefix>mgmt.<地域>.azure.com | オーケストレーションの選択で入力した [DNS prefix for container service](#acs config4) と、リソース配置先の [地域](#acs config2) を指定する。|
 | ポート | 2200 | SSHで接続するポート番号。"2200"固定 |
-| 秘密鍵のパス | マスタノードに接続するための秘密鍵 | リソース配置先の[SSH public key](#acs config2)で指定した公開鍵に対応する、秘密鍵のファイルパスを指定。|
+| 秘密鍵のパス | マスタノードに接続するための秘密鍵 | リソース配置先の [SSH public key](#acs config2) で指定した公開鍵に対応する、秘密鍵のファイルパスを指定。|
 | ソースポート | 2375 | Dockerコマンドを受け付けるポート番号。"2375"固定 |
 | 接続先 | localhost | SSHトンネリングの接続先ホスト名。"localhost"固定  |
 
@@ -482,7 +485,7 @@ loginユーザは、ACS配置先指定で指定した[User Name](#acs-config2)�
 
 ![putty config4](./putty-config4.PNG)
 
-Docker swarmが起動していることを確認できる。(上図、赤枠線部分）
+Docker swarmが起動していることを確認できる。(上図、赤枠部分）
 
 次に、クライアントPC側で、Docker infoコマンドを実行する。
 実行前に、秘密鍵ファイルをDocker指定のパスにコピーし、環境変数として DOCKER_HOST=:2375を設定すること。
@@ -500,7 +503,7 @@ CMD> docker info
 
 ![docker-swarm-info](./docker-swam-info.PNG)
 
-Dockerエージェントノードとして2台の仮想マシンが割り当てられていることを確認できる。（上図、赤枠線部分）
+Dockerエージェントノードとして2台の仮想マシンが割り当てられていることを確認できる。（上図、赤枠部分）
 
 ## ACSにコンテナクラスターを配置
 
@@ -559,7 +562,8 @@ networks:
 PS> choco install docker-compose
 ```
 
-Docker-composeを実行する。ここでは、C:\workディレクトリにcassandra-clstr.ymlファイルを保存し、docker-composeを実行した。
+インストールが終わったらDocker-composeを実行する。
+ここでは、C:\workディレクトリにcassandra-clstr.ymlファイルを保存し、docker-composeを実行した。
 
 ```CMD
 # docker-composeを使ってCassandraコンテナをロードし、Cassandraクラスタを構成する。
@@ -613,6 +617,8 @@ Azure-cliをarmモードに変更し、Azure Resource Managerに対して命令�
 操作することが可能である。
 
 ```CMD
+# ARMモードに変更
+CMD> azure config mode arm
 # Swarmマスター(VM)の停止
 CMD> azure vm stop <リソースグループ> <仮想マシン名>
 # Swarmエージェント(VMSS)の停止
@@ -622,6 +628,7 @@ CMD> azure vmss deallocate <リソースグループ> <仮想マシンスケー�
 今回の環境であれば以下のように実行する。
 
 ```CMD実行例
+CMD> azure config mode arm
 CMD> azure vm stop dcrclstr swarm-master-5DDAC7BE-0
 CMD> azure vmss deallocate dcrclstr swarm-agent-5DDAC7BE-vmss *
 ```
@@ -720,7 +727,7 @@ Azureポータルサイトにアクセスし、
 ![vmss config3](./vmss-config3.PNG)
 
 接続のユーザ名およびパスワードは、先に実施したSSHトンネリングの指定と同じである。
-接続すると、SSHのプロンプトにマシン名が表示されている。（下図赤線内）
+接続すると、SSHのプロンプトにマシン名が表示されている。（下図赤枠内）
 
 あとは、[DockerコンテナにAzureストレージをマップする](#azure-storage)と同じ手順で
 azurefile-dockervolumedriverをインストールする。
@@ -817,7 +824,7 @@ CMD> docker volume ls
 
 ![vmss config6](./vmss-config6.PNG)
 
-コンテナの起動と合わせて、ボリュームが作成されていることがわかる（上図赤線内）。
+コンテナの起動と合わせて、ボリュームが作成されていることがわかる（上図赤枠内）。
 今回の例では、エージェントノードが2つあるため、2つづつボリュームが生成されていることがわかる。
 
 構成は以下の通り。
