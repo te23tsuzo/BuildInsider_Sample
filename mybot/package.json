@@ -10,9 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "botbuilder": "^3.4.4",
+    "cassandra-driver": "^3.1.6",
     "config": "^1.24.0",
     "gulp": "^3.9.1",
     "gulp-develop-server": "^0.5.2",
+    "kuromoji": "^0.1.1",
     "restify": "^4.3.0",
     "twitter-node-client": "0.0.6"
   }

@@ -5,5 +5,14 @@
         "accessToken": "138651801-Q4Sfz763J1THcwBUyptAjxaSZKylqIF1sSr7WkLU",
         "accessTokenSecret": "u2bGZrAzcUS3XrGstSO2Q7z7P36grU4PUmNVGWMN1EMd8",
         "callBackUrl": ""
-    }
+    },
+    "cassandra": {
+        "contactPoints": ["localhost"],
+        "keyspace":  "mykeyspace"
+    },
+    "genre": [
+        "ラーメン",
+        "定食",
+        "中華"
+    ]
 }
