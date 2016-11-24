@@ -14,5 +14,9 @@
         "ラーメン",
         "定食",
         "中華"
-    ]
+    ],
+    "cognitive": {
+        "url": "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
+        "key": "682cd9e4c1fc459f9883fe0744605c9f"
+    } 
 }

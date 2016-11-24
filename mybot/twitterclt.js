@@ -1,6 +1,6 @@
-var Twitter = require('twitter-node-client').Twitter;
-var config = require('config');
-//var parse = require('./parse.js');
+const Twitter = require('twitter-node-client').Twitter;
+const config = require('config');
+var parse = require('./parse.js');
 
 var error = function (err, response, body) {
         console.log('ERROR [%s]', err);
@@ -19,6 +19,7 @@ var success = function (data) {
                 ,element.entities.hashtags[0].text
                 ,element.geo!=null?JSON.stringify(element.geo):''
                 );
+            // kuromojiでの解析
             // parse.parse(element.text,function(path) {
             //     path.forEach(function (t){
             //         if (t.pos =='形容詞') {
@@ -30,6 +31,10 @@ var success = function (data) {
             //             console.log("{id:%s, noun:'%s'}",element.id,t.basic_form);
             //         }
             //     });
+            // });
+            //MS TextAnalyzerによる解析
+            // parse.txtanalyze(element.text, function(){
+            //     parse.response();
             // });
         } catch (o){
             //console.log(o);
@@ -47,7 +52,7 @@ cities.forEach(function (city){
     twitter.getSearch(
         {
             'q': '#ラーメン', 
-            'count': 3, 
+            'count': 1, 
             'geocode': geo 
         }, 
         error, success);
