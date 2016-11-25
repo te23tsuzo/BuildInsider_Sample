@@ -2,8 +2,10 @@
 const config = require('config');
 const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 //const parser = kuromoji.builder({dicPath:"./node_modules/kuromoji/dict"});
-var xhr = new XMLHttpRequest();
-    
+var xhr;
+var onloadCB;
+
+// kuromojiの解析は、CPUリソースとメモリを食いすぎるのでやめておく
 // exports.parse = function (content, next) {
 //     parser.build(function (err,tokenizer) {
 //         var path = tokenizer.tokenize(content);
@@ -13,38 +15,53 @@ var xhr = new XMLHttpRequest();
 // }
 
 exports.txtanalyze = function(content,next) {
-    xhr.resposeText ='';
-    xhr.onload = next;
+    xhr = new XMLHttpRequest();
+    //xhr.resposeText ='';
+    //onloadCB = next;
+    
+    //リクエストヘッダの設定
     xhr.onreadystatechange = function() {
-        //console.log(xhr.readyState);
         try {
-            if (xhr.readyState == xhr.OPENED) {
+            if (xhr.readyState == xhr.OPENED && xhr.getRequestHeader('Content-Type') != 'application/json') {
                 xhr.setRequestHeader('Content-Type','application/json');
                 xhr.setRequestHeader('Ocp-Apim-Subscription-Key', config.get('cognitive').key);
-                //console.log('%s,%s', xhr.getRequestHeader('Content-Type'), xhr.getRequestHeader('Ocp-Apim-Subscription-Key'));
+                //console.log('[%s:%s]', xhr.readyState , xhr.getRequestHeader('Content-Type'));
             }
         } catch (o) {
-            //console.log(o);
+            console.log(o);
         } finally {}
-        };
+    };
     
-    xhr.open("POST", config.get('cognitive').url,true );
+    //レスポンスの回収
+    xhr.onload = function () {
+        if (xhr != null && xhr.readyState ==xhr.DONE) {
+            next(xhr.responseText);
+            xhr.responseText ="";
+        } else {
+            console.log ("xhr is not done. %s.", xhr.readyState);
+            console.log (xhr.responseText);
+        }
+    };
+
+    //Analyzerオープン
+    //console.log("preopen state is %s", xhr.readyState);
+    if (xhr.readyState < xhr.OPENED) { 
+        xhr.open("POST", config.get('cognitive').url,true );
+    };
+    
+    //送信電文の作成と送信
+    //console.log ("text:%s", contrnt.text);
     var data = { "documents": [
                 {
                     "language": "ja",
-                    "id": "100",
-                    "text": content
+                    "id": content.id,
+                    "text": content.text
                 }]}; 
     xhr.send(JSON.stringify( data));
 };
 
-exports.response = function() {
-    console.log(xhr.responseText);
-    return xhr.responseText;
-}
-
 //検証
-this.txtanalyze("今日はとても寒くて、気分が憂鬱",function(){
-    console.log("done.");
-    module.exports.response();
-});
+// this.txtanalyze("今日はとても寒くて、気分が憂鬱",function(data){
+//     console.log("done.");
+//     console.log(data);
+// });

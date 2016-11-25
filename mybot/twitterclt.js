@@ -12,13 +12,8 @@ var success = function (data) {
     //console.log( "%s",ans.statuses);
     stats.forEach(function(element) {
         try {
-            console.log(
-                "{id:'%s', text:'%s', tag:'%s', geo:'%s'}"
-                ,element.id
-                ,element.text
-                ,element.entities.hashtags[0].text
-                ,element.geo!=null?JSON.stringify(element.geo):''
-                );
+            
+            /*
             // kuromojiでの解析
             // parse.parse(element.text,function(path) {
             //     path.forEach(function (t){
@@ -32,10 +27,12 @@ var success = function (data) {
             //         }
             //     });
             // });
+            */
+
             //MS TextAnalyzerによる解析
-            // parse.txtanalyze(element.text, function(){
-            //     parse.response();
-            // });
+            parse.txtanalyze(element, function(data){
+                    console.log("analyze:%s", data);
+            });
         } catch (o){
             //console.log(o);
         } finally {}
