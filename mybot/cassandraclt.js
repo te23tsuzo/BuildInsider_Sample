@@ -23,8 +23,10 @@ exports.select = function (keyword) {
 }
 
 exports.insert = function (err, post) {
+   console.log("Id:%s", post.id);
+
    client.execute(
        "insert into posts (id, title, content) values (?, ?, ?)",
-       [post.id, post.title, post.content],
+       [post.id, post.title, post.content],{prepare: true,hint: ["text","text","text"]},
         err);  
 }

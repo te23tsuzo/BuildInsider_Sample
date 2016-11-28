@@ -48,7 +48,7 @@ exports.txtanalyze = function(content,next) {
     var data = { "documents": [
                 {
                     "language": "ja",
-                    "id": content.id,
+                    "id": content.postId,
                     "text": content.text
                 }]}; 
     xhr.send(JSON.stringify( data));
