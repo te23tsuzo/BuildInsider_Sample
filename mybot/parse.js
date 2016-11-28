@@ -1,13 +1,9 @@
-//const kuromoji = require('kuromoji');
 const config = require('config');
 const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
-//const parser = kuromoji.builder({dicPath:"./node_modules/kuromoji/dict"});
-var xhr;
-var onloadCB;
 
-// kuromojiの解析は、CPUリソースとメモリを食いすぎるのでやめておく
+// kuromojiでの解析は、CPUリソースとメモリを食いすぎるのでやめておく
 // exports.parse = function (content, next) {
-//     parser.build(function (err,tokenizer) {
+//     kuromoji.build(function (err,tokenizer) {
 //         var path = tokenizer.tokenize(content);
 //         //console.log(path);
 //         next(path);
@@ -15,9 +11,7 @@ var onloadCB;
 // }
 
 exports.txtanalyze = function(content,next) {
-    xhr = new XMLHttpRequest();
-    //xhr.resposeText ='';
-    //onloadCB = next;
+    var xhr = new XMLHttpRequest();
     
     //リクエストヘッダの設定
     xhr.onreadystatechange = function() {
