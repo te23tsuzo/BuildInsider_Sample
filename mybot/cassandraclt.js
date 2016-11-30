@@ -22,11 +22,27 @@ exports.select = function (keyword) {
     );
 }
 
-exports.insert = function (err, post) {
+exports.insert = function (post) {
    console.log("Id:%s", post.id);
 
    client.execute(
        "insert into posts (id, title, content) values (?, ?, ?)",
-       [post.id, post.title, post.content],{prepare: true,hint: ["text","text","text"]},
-        err);  
+       [post.id, post.title, post.content],
+       {prepare: true,hint: ["text","text","text"]},
+       displayError
+    );
+}
+
+exports.initDb = function() {
+    console.log("Db initialize.");
+
+    const queries = [
+            'Drop TABLE if exists mykeyspace.posts',
+            'CREATE TABLE mykeyspace.posts ( id text PRIMARY KEY, content text, created_at timestamp, tags set<text>, title text)'
+            ];
+
+    queries.forEach(function(q,i,a){
+        //console.log(q);
+        client.execute(q, {}, {}, displayError);
+    });
 }

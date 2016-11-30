@@ -15,15 +15,11 @@ exports.txtanalyze = function(content,next) {
     
     //リクエストヘッダの設定
     xhr.onreadystatechange = function() {
-        try {
-            if (xhr.readyState == xhr.OPENED && xhr.getRequestHeader('Content-Type') != 'application/json') {
-                xhr.setRequestHeader('Content-Type','application/json');
-                xhr.setRequestHeader('Ocp-Apim-Subscription-Key', config.get('cognitive').key);
-                //console.log('[%s:%s]', xhr.readyState , xhr.getRequestHeader('Content-Type'));
-            }
-        } catch (o) {
-            console.log(o);
-        } finally {}
+        if (xhr.readyState == xhr.OPENED && xhr.getRequestHeader('Content-Type') != 'application/json') {
+            xhr.setRequestHeader('Content-Type','application/json');
+            xhr.setRequestHeader('Ocp-Apim-Subscription-Key', config.get('cognitive').key);
+            //console.log('[%s:%s]', xhr.readyState , xhr.getRequestHeader('Content-Type'));
+        }
     };
     
     //レスポンスの回収
@@ -44,7 +40,7 @@ exports.txtanalyze = function(content,next) {
     };
     
     //送信電文の作成と送信
-    //console.log ("text:%s", contrnt.text);
+    //console.log ("text:%s", content.text);
     var data = { "documents": [
                 {
                     "language": "ja",
@@ -55,7 +51,7 @@ exports.txtanalyze = function(content,next) {
 };
 
 //検証
-// this.txtanalyze("今日はとても寒くて、気分が憂鬱",function(data){
+// module.exports.txtanalyze({postId: "1", text: "今日はとても寒くて、気分が憂鬱"},function(data){
 //     console.log("done.");
 //     console.log(data);
 // });
