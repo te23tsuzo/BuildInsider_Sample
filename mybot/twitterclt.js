@@ -22,20 +22,28 @@ var success = function (data) {
         
 
         //MS TextAnalyzerによる解析
-        element.postId = postId;
-        parse.txtanalyze(element, function(data){
-            var phrases = JSON.parse(data);
-            if (typeof(phrases) != "undefined") {
-                console.log(phrases.documents);
-            }
-            //cassandraに挿入
-            // db.insert({
-            //     id: postId,
-            //     title: "ラーメン",
-            //     content: element.text,
-            //     tags: data.documents[0].keyPhrases
-            // });
+        // element.postId = postId;
+        // parse.txtanalyze(element, function(data){
+        //     var phrases = JSON.parse(data);
+        //     if (typeof(phrases) != "undefined") {
+        //         console.log(phrases.documents);
+        //     }
+        // });
+
+        //cassandraに挿入
+        var tags = [];
+        for (tag in element.entities.hashtags) {
+            tags.push(element.entities.hashtags[tag].text);
+        }
+        console.log("Tag:%s",tags);
+        
+        db.insert({
+            id: postId,
+            title: "ラーメン",
+            content: element.text,
+            tags: tags
         });
+
     }, error);
 };
 
