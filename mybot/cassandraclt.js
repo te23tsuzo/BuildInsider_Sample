@@ -26,9 +26,9 @@ exports.insert = function (post) {
    console.log("Id:%s", post.id);
 
    client.execute(
-       "insert into posts (id, title, content) values (?, ?, ?)",
-       [post.id, post.title, post.content],
-       {prepare: true,hint: ["text","text","text"]},
+       "insert into posts (id, title, content, tags, created_at) values (?, ?, ?, ?, dateof(now()))",
+       [post.id, post.title, post.content, post.tags],
+       {prepare: true,hint: ["text","text","text","set<text>"]},
        displayError
     );
 }
