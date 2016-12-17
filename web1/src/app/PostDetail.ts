@@ -1,13 +1,13 @@
 import {Component} from '@angular/core';
+import {Post} from './model_post';
 
 @Component({
   selector: 'postdetail',
   template: require('./PostDetail.html')
 })
 export class PostDetail {
-  public text: string;
+  public post:Post;
 
   constructor() {
-    this.text = 'My post detail!';
   }
 }

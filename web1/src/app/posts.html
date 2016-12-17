@@ -1,7 +1,32 @@
-<h1>{{ hello }}</h1>
+<h1>Posts</h1>
 
 <body>
-    list
-    <postslist></postslist>
-    <postdetail></postdetail>
+    <table>
+        <tr>
+            <td>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>tags</th>
+                            <th>date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let post of posts" [class.selected]="post === selectedPost" (click)="onSelect(post)">
+                            <td>{{post.title}}</td>
+                            <td>{{post.tags}}</td>
+                            <td>{{post.date}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td>
+                <div *ngIf="selectedPost">
+                    <div>
+                        <label> contents: </label> {{selectedPost.contents}}
+                    </div>
+                </div>
+            </td>
+        </tr>
 </body>
