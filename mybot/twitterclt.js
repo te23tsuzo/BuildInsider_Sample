@@ -26,7 +26,7 @@ var success = function (data) {
         parse.txtanalyze(element, function(data){
             var phrases = JSON.parse(data);
             if (typeof(phrases) != "undefined") {
-                console.log(phrases.documents);
+                console.log("type:[%s], value:[%s]",typeof(phrases.documents),phrases.documents);
             }
             //cassandraに挿入
             // db.insert({
