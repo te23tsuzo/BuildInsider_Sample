@@ -1,0 +1,20 @@
+.selected {
+    color: blue;
+    background: limegreen;
+}
+
+.detail {
+  color: black;
+  background: lightslategrey;
+  width: 60%;
+}
+
+.contents {
+  color: blue;
+  font-size: 12pt;
+}
+
+.tags {
+  color: deepskyblue;
+  font-size: 10pt;
+}

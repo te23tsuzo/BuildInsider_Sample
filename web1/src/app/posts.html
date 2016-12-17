@@ -1,3 +1,7 @@
+<head>
+    <link rel="stylesheet" href="app/posts.css">
+</head>
+
 <h1>Posts</h1>
 
 <body>
@@ -21,12 +25,9 @@
                     </tbody>
                 </table>
             </td>
-            <td>
-                <div *ngIf="selectedPost">
-                    <div>
-                        <label> contents: </label> {{selectedPost.contents}}
-                    </div>
-                </div>
+            <td class="detail">
+                <postdetail [post]="selectedPost"></postdetail>
             </td>
         </tr>
+    </table>
 </body>

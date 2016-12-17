@@ -1,9 +1,10 @@
-import {Component} from '@angular/core';
+import {Component,ViewEncapsulation} from '@angular/core';
 import {Post} from './model_post';
 
 @Component({
   selector: 'fountain-app',
-  template: require('./posts.html')
+  template: require('./posts.html'),
+  encapsulation: ViewEncapsulation.None
 })
 export class PostsComponent {
   public posts: Post[];
@@ -16,7 +17,7 @@ export class PostsComponent {
     ];
   }
 
-  onSelect(post: Post) {
+  onSelect(post: Post): void {
     this.selectedPost = post;
   }
 }

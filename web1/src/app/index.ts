@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {PostsComponent} from './posts';
-import {PostDetail} from './PostDetail';
+import {Postdetail} from './postdetail';
 
 @NgModule({
   imports: [
@@ -10,7 +10,7 @@ import {PostDetail} from './PostDetail';
   ],
   declarations: [
     PostsComponent,
-    PostDetail
+    Postdetail
   ],
   bootstrap: [PostsComponent]
 })

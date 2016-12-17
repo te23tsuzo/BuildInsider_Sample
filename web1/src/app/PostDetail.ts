@@ -1,13 +1,12 @@
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {Post} from './model_post';
 
 @Component({
   selector: 'postdetail',
-  template: require('./PostDetail.html')
+  template: require('./postdetail.html')
 })
-export class PostDetail {
-  public post:Post;
+export class Postdetail {
+  @Input()
+  post: Post;
 
-  constructor() {
-  }
 }
