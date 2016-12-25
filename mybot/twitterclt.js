@@ -20,16 +20,6 @@ var success = function (data) {
         //ポストIDを文書から作成
         var postId = md5(element.text); 
         
-
-        //MS TextAnalyzerによる解析
-        // element.postId = postId;
-        // parse.txtanalyze(element, function(data){
-        //     var phrases = JSON.parse(data);
-        //     if (typeof(phrases) != "undefined") {
-        //         console.log(phrases.documents);
-        //     }
-        // });
-
         //cassandraに挿入
         var tags = [];
         for (tag in element.entities.hashtags) {
@@ -39,7 +29,7 @@ var success = function (data) {
         
         db.insert({
             id: postId,
-            title: "ラーメン",
+            title: "ramen",
             content: element.text,
             tags: tags
         });
@@ -47,8 +37,10 @@ var success = function (data) {
     }, error);
 };
 
-//データ収集
-// Cityに登録された場所近辺でつぶやかれたものを10件ずつ収集する
+/*
+* データ収集
+* Cityに登録された場所近辺でつぶやかれたものを10件ずつ収集する
+*/
 exports.collect = function(keyword) {
     var twitter = new Twitter(config.get('twitter'));
 
@@ -70,5 +62,3 @@ exports.collect = function(keyword) {
         }
     );
 };
-
-module.exports.collect('#ラーメン');

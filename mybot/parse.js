@@ -1,15 +1,9 @@
 const config = require('config');
 const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 
-// kuromojiでの解析は、CPUリソースとメモリを食いすぎるのでやめておく
-// exports.parse = function (content, next) {
-//     kuromoji.build(function (err,tokenizer) {
-//         var path = tokenizer.tokenize(content);
-//         //console.log(path);
-//         next(path);
-//     });
-// }
-
+/*
+* Azure Congnitive Serviceを使ったテキスト検証
+*/
 exports.txtanalyze = function(content,next) {
     var xhr = new XMLHttpRequest();
     
