@@ -4,11 +4,11 @@ const db = require('./cassandraclt.js');
 const twclt = require('./twitterclt.js');
 
 gulp.task('start', function() {
-    server.listen( {path: './index.js'})
+    server.listen( {path: './index.js'});
 });
 
 gulp.task('restart', function() {
-    gulp.watch(['./index.js'], server.restart(function() {
+    gulp.watch(['./index.js','./cassandraclt.js'], server.restart(function() {
         echo('restrt server.')
     }));
 });
