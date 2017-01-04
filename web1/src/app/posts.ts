@@ -1,20 +1,30 @@
-import {Component,ViewEncapsulation} from '@angular/core';
+import {Component, ViewEncapsulation, OnInit} from '@angular/core';
 import {Post} from './model_post';
+import {PostService} from './post.service';
 
 @Component({
   selector: 'fountain-app',
   template: require('./posts.html'),
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [PostService]
 })
-export class PostsComponent {
+export class PostsComponent implements OnInit {
   public posts: Post[];
   public selectedPost: Post;
+  errorMessage: string;
 
-  constructor() {
-    this.posts = [
-      {id: "test1", title: "Title1", contents: "This test contens.", tags: ["test","sample"], date: "2016/12/17"},
-      {id: "test2", title: "Title2", contents: "This test contens2.", tags: ["test","sample"], date: "2016/12/17"}
-    ];
+  constructor(private postService: PostService) {
+  }
+
+  getPosts(): void {
+    this.postService.getPosts()
+      .subscribe(
+        data => this.posts = data,
+        error => this.errorMessage = error);
+  }
+
+  ngOnInit(): void {
+    this.getPosts();
   }
 
   onSelect(post: Post): void {

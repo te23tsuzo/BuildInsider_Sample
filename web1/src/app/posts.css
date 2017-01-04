@@ -1,12 +1,25 @@
+.main {
+  width: 80%;
+  height: 100px;
+}
+
 .selected {
     color: blue;
     background: limegreen;
 }
 
+.list {
+  width: 60%;
+  height: 90px;
+  overflow: scroll;
+}
+
 .detail {
   color: black;
   background: lightslategrey;
-  width: 60%;
+  vertical-align: top;
+  width: 40%;
+  height: 90px;
 }
 
 .contents {

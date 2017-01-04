@@ -3,7 +3,7 @@ const config = require('config');
 const async = require('async');
 
 const client = new cassandra.Client(config.get('cassandra'));
-const query = 'select id, title, content from posts where title = ?';
+const query = 'select id, title, content, tags, created_at from posts where title = ?';
 
 var displayRow = function (n,row) {console.log(row);return;};
 
