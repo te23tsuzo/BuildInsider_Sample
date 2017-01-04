@@ -60,14 +60,19 @@ exports.initDb = function() {
     console.log("Db initialize.");
 
     const queries = [
+            "CREATE KEYSPACE if not exists mykeyspace WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true",
             'Drop TABLE if exists mykeyspace.posts',
             'CREATE TABLE mykeyspace.posts ( id text PRIMARY KEY, content text, created_at timestamp, tags set<text>, title text)',
             'CREATE INDEX posts_title ON mykeyspace.posts (title)'
             ];
         
-    async.each(queries, function(q,next) {
-        //console.log(q);
-        client.execute(q, {}, {}, displayError);
+    async.eachSeries(queries, function(q,next) {
+        console.log(q);
+        //DDL実行時の応答を待たないため、100ミリ間隔でコマンドで実行する
+        setTimeout(function() {
+            client.execute(q, {}, {}, displayError);
+            next();    
+        }, 100);
     }, function(err) {
         console.log(err);
     });

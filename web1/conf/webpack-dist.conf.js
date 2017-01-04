@@ -48,7 +48,8 @@ module.exports = {
       conf.paths.src
     ),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': '"production"'
+      'process.env.NODE_ENV': '"production"',
+      'process.env.POST_URL': '"http://postservice:8080/posts/"'
     }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {unused: true, dead_code: true, warnings: false} // eslint-disable-line camelcase

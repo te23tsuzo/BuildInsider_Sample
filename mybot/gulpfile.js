@@ -22,5 +22,5 @@ gulp.task('initdb', function() {
 });
 
 gulp.task('collectweet', function() {
-    twclt.collect('#ラーメン');
+    twclt.collect('ラーメン');
 });

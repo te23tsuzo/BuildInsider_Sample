@@ -36,7 +36,10 @@ module.exports = {
     new webpack.ContextReplacementPlugin(
       /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
       conf.paths.src
-    )
+    ),
+    new webpack.DefinePlugin({
+      'process.env.POST_URL': '"http://localhost:8080/posts/"'
+    })
   ],
   debug: true,
   devtool: 'source-map',

@@ -1,22 +1,23 @@
+/// <reference path="../../typings/index.d.ts"/>
+
 import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import {Post} from './model_post';
 
+declare var process: any;
+
 @Injectable()
 export class PostService {
   posts: Post[];
-  private postsUrl = 'http://localhost:8080/posts/ramen';
+  //private postsUrl = 'http://localhost:8080/posts/' + encodeURI('ラーメン');
+  private postsUrl = process.env.POST_URL + encodeURI('ラーメン');
 
   constructor(private http: Http) {};
 
   getPosts(): Observable<Post[]> {
     console.log(this.postsUrl);
-    // this.posts =[
-    //   {id: "1", title: "test1", contents: "test contents1", tags: ["test"], date: "2016/12/12"},
-    //   {id: "2", title: "test2", contents: "test contents2", tags: ["test"], date: "2016/12/13"}
-    // ];
     return this.http.get(this.postsUrl)
       .map(this.extractData)
       .catch(this.handleError);

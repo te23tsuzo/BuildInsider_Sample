@@ -4,6 +4,7 @@ const async = require('async');
 var md5 = require('md5');
 var parse = require('./parse.js');
 var db = require('./cassandraclt.js');
+var _title;
 
 //エラー表示ハンドラー
 var error = function (err, response, body) {
@@ -29,7 +30,7 @@ var success = function (data) {
         
         db.insert({
             id: postId,
-            title: "ramen",
+            title: _title,
             content: element.text,
             tags: tags
         });
@@ -43,8 +44,8 @@ var success = function (data) {
 */
 exports.collect = function(keyword) {
     var twitter = new Twitter(config.get('twitter'));
-
     var cities = require('./config/city.json');
+    _title = keyword;
 
     async.each( cities,
         function (city,next){
