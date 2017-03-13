@@ -1,0 +1,25 @@
+{
+  "name": "mybot",
+  "version": "1.0.0",
+  "description": "bot sample",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "asahi",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.1.4",
+    "cassandra-driver": "^3.1.6",
+    "config": "^1.24.0",
+    "gulp": "^3.9.1",
+    "gulp-develop-server": "^0.5.2",
+    "md5": "^2.2.1",
+    "restify": "^4.3.0",
+    "twitter-node-client": "0.0.6",
+    "xmlhttprequest": "^1.8.0"
+  },
+  "devDependencies": {
+    "restify-clients": "^1.5.0"
+  }
+}

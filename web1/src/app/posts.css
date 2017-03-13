@@ -1,0 +1,33 @@
+.main {
+  width: 80%;
+  height: 100px;
+}
+
+.selected {
+    color: blue;
+    background: limegreen;
+}
+
+.list {
+  width: 60%;
+  height: 90px;
+  overflow: scroll;
+}
+
+.detail {
+  color: black;
+  background: lightslategrey;
+  vertical-align: top;
+  width: 40%;
+  height: 90px;
+}
+
+.contents {
+  color: blue;
+  font-size: 12pt;
+}
+
+.tags {
+  color: deepskyblue;
+  font-size: 10pt;
+}

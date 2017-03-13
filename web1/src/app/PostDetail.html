@@ -1,0 +1,10 @@
+<div *ngIf="post">
+  <dl>
+    <dt> contents: </dt>
+    <dd class="contents"> {{post.content}}</dd>
+    <dt> tags: </dt>
+    <dd class="tags">{{post.tags}}</dd>
+    <dt> date: </dt>
+    <dd>{{post.created_at}}</dd>
+  </dl>
+</div>

@@ -1,0 +1,32 @@
+﻿[
+    {
+        "prefecture":  "北海道",
+        "city":  "札幌市",
+        "latitude":  "43.06417",
+        "longitude":  "141.34694"
+    },
+    {
+        "prefecture":  "埼玉県",
+        "city":  "さいたま市",
+        "latitude":  "35.85694",
+        "longitude":  "139.64889"
+    },
+    {
+        "prefecture":  "千葉県",
+        "city":  "千葉市",
+        "latitude":  "35.60472",
+        "longitude":  "140.12333"
+    },
+    {
+        "prefecture":  "東京都",
+        "city":  "新宿区",
+        "latitude":  "35.68944",
+        "longitude":  "139.69167"
+    },
+    {
+        "prefecture":  "神奈川県",
+        "city":  "横浜市",
+        "latitude":  "35.44778",
+        "longitude":  "139.6425"
+    }
+]

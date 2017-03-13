@@ -1,0 +1,33 @@
+<head>
+    <link rel="stylesheet" href="app/posts.css">
+</head>
+
+<h1>Posts</h1>
+
+<body>
+    <table class="main">
+        <tr>
+            <td class="list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>tags</th>
+                            <th>date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let post of posts" [class.selected]="post === selectedPost" (click)="onSelect(post)">
+                            <td>{{post.title}}</td>
+                            <td>{{post.tags}}</td>
+                            <td>{{post.created_at}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td class="detail">
+                <postdetail [post]="selectedPost"></postdetail>
+            </td>
+        </tr>
+    </table>
+</body>
