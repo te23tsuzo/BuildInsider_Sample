@@ -1,9 +1,9 @@
 {
     "twitter": {
-        "consumerKey": "qiZCO8LkiS4qXTShIFcAg02fy",
-        "consumerSecret": "nolc0AUDLl5dPVuYMsDTPA3OUC6ndrjcbXAjrYJlX4H8W3izPo",
-        "accessToken": "138651801-Q4Sfz763J1THcwBUyptAjxaSZKylqIF1sSr7WkLU",
-        "accessTokenSecret": "u2bGZrAzcUS3XrGstSO2Q7z7P36grU4PUmNVGWMN1EMd8",
+        "consumerKey": "set your consumerKey",
+        "consumerSecret": "set your consumerrSecret",
+        "accessToken": "set your accessToken",
+        "accessTokenSecret": "set your accessTokenSecret",
         "callBackUrl": ""
     },
     "cassandra": {
@@ -14,9 +14,5 @@
         "ラーメン",
         "定食",
         "中華"
-    ],
-    "cognitive": {
-        "url": "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
-        "key": "682cd9e4c1fc459f9883fe0744605c9f"
-    } 
+    ] 
 }
