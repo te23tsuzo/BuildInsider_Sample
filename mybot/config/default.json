@@ -7,12 +7,10 @@
         "callBackUrl": ""
     },
     "cassandra": {
-        "contactPoints": ["localhost"],
+        "contactPoints": ["cassandra"],
         "keyspace":  "mykeyspace"
     },
     "genre": [
-        "ラーメン",
-        "定食",
-        "中華"
+        "ラーメン"
     ] 
 }

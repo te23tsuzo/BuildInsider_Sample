@@ -52,7 +52,7 @@ module.exports = {
       template: conf.path.src('index.html')
     }),
     new webpack.DefinePlugin({
-      'process.env.POST_URL': '"http://localhost:8080/posts/"'
+      'process.env.POST_URL': '"http://mybot:8080/posts/"'
     }),
     new webpack.ContextReplacementPlugin(
       /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
