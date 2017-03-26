@@ -68,11 +68,11 @@ exports.initDb = function() {
         
     async.eachSeries(queries, function(q,next) {
         console.log(q);
-        //DDL実行時の応答を待たないため、100ミリ間隔でコマンドで実行する
+        //DDL実行時の応答を待たないため、500ミリ間隔でコマンドで実行する
         setTimeout(function() {
             client.execute(q, {}, {}, displayError);
             next();    
-        }, 100);
+        }, 500);
     }, function(err) {
         console.log(err);
     });
