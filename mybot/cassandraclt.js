@@ -60,21 +60,23 @@ exports.initDb = function() {
     console.log("Db initialize.");
 
     const queries = [
-            "CREATE KEYSPACE if not exists mykeyspace WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true",
-            'Drop TABLE if exists mykeyspace.posts',
-            'CREATE TABLE mykeyspace.posts ( id text PRIMARY KEY, content text, created_at timestamp, tags set<text>, title text)',
-            'CREATE INDEX posts_title ON mykeyspace.posts (title)'
+            "CREATE KEYSPACE IF NOT EXISTS mykeyspace WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;",
+            'CREATE TABLE IF NOT EXISTS mykeyspace.posts ( id text PRIMARY KEY, content text, created_at timestamp, tags set<text>, title text);',
+            'CREATE INDEX IF NOT EXISTS posts_title ON mykeyspace.posts (title);'
             ];
         
     async.eachSeries(queries, function(q,next) {
-        console.log(q);
-        //DDL実行時の応答を待たないため、500ミリ間隔でコマンドで実行する
-        setTimeout(function() {
-            client.execute(q, {}, {}, displayError);
-            next();    
-        }, 500);
+        client.execute(q, {}, {}, function(err) {
+            console.log(q);
+            if (err != null) {
+                console.log(err);
+                process.exit();
+            }
+        });
+        setTimeout(next, 1000);
     }, function(err) {
         console.log(err);
+        process.exit();
     });
 
 }
