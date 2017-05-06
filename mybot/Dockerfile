@@ -1,4 +1,4 @@
-FROM node:4-onbuild
+FROM node:7-onbuild
 
 RUN mkdir -p /usr/src/app/config
 RUN npm install -g gulp gulp-cli

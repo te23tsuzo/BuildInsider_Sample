@@ -5,29 +5,27 @@
 <h1>Posts</h1>
 
 <body>
-    <table class="main">
-        <tr>
-            <td class="list">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>tags</th>
-                            <th>date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let post of posts" [class.selected]="post === selectedPost" (click)="onSelect(post)">
-                            <td>{{post.title}}</td>
-                            <td>{{post.tags}}</td>
-                            <td>{{post.created_at}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-            <td class="detail">
-                <postdetail [post]="selectedPost"></postdetail>
-            </td>
-        </tr>
-    </table>
+    <div>
+        <span style="border:solid">
+            記事一覧
+        </span><br>
+        <span class="item1">Title</span>
+        <span class="item2">tags</span>
+        <span class="item3">date</span>
+    </div>
+        
+    <div class="list">
+        <div *ngFor="let post of posts" [class.selected]="post === selectedPost" (click)="onSelect(post)">
+            <span class="item1">{{post.title}}</span>
+            <span class="item2">{{post.tags}}</span>
+            <span class="item3">{{post.created_at}}</span>
+        </div>
+    </div>
+    <hr>
+    <div style="display:inline">
+        <span style="border:solid">
+            記事
+        </span>
+        <postdetail [post]="selectedPost"></postdetail>
+    </div>
 </body>

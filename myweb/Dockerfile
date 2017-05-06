@@ -1,6 +1,6 @@
-FROM node:4-onbuild
+FROM node:7-onbuild
 
-RUN npm install -g gulp gulp-cli
+RUN npm install -g gulp-cli
 
 ONBUILD COPY *.js /usr/src/app
 ONBUILD COPY *.json /usr/src/app

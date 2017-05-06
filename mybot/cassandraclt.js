@@ -60,23 +60,53 @@ exports.initDb = function() {
     console.log("Db initialize.");
 
     const queries = [
-            "CREATE KEYSPACE IF NOT EXISTS mykeyspace WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;",
-            'CREATE TABLE IF NOT EXISTS mykeyspace.posts ( id text PRIMARY KEY, content text, created_at timestamp, tags set<text>, title text);',
-            'CREATE INDEX IF NOT EXISTS posts_title ON mykeyspace.posts (title);'
+            'CREATE TABLE IF NOT EXISTS mykeyspace.posts ( id text PRIMARY KEY, content text, created_at timestamp, tags set<text>, title text);'
+            ,'CREATE INDEX IF NOT EXISTS posts_title ON mykeyspace.posts (title);'
             ];
-        
+
+    //テーブルとインデックスを生成する
     async.eachSeries(queries, function(q,next) {
         client.execute(q, {}, {}, function(err) {
+        //console.log(err);
+        //mykeyspaceスキーマがない場合はmykeyspaceスキーマを作成する
+        if (err !=null) {
+            client.keyspace = "system"; 
+            client.execute("CREATE KEYSPACE IF NOT EXISTS mykeyspace WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;"
+            ,{},function(err) {
+                if (err == null) {
+                    console.log("create keyspace.");
+                    //スキーマが生成された後に改めてクエリを実行
+                    client.execute(q,{},{},function(err){
+                        console.log(q);
+                        setTimeout(next, 1000);            
+                    });
+                } else {
+                    console.log("error in keyspace create");
+                    console.log(err);
+                    process.exit();
+                }
+            });
+        } else {
             console.log(q);
-            if (err != null) {
-                console.log(err);
-                process.exit();
-            }
+            setTimeout(next, 1000);
+        }
         });
-        setTimeout(next, 1000);
     }, function(err) {
-        console.log(err);
+        console.log("created schema.");
         process.exit();
     });
 
+    //本当はbatchメソッドで処理したいがDDLが実行できない
+    // client.batch(queries,{},function(err,result){
+    //     if (err != null) {
+    //         console.log("error in create table.");
+    //         console.log(err);       
+    //     } 
+    //     else 
+    //     {
+    //         console.log("create table and index.");
+    //         console.log(result);
+    //     }
+    //     process.exit();
+    // });
 }

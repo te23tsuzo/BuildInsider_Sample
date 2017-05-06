@@ -3,51 +3,51 @@ const conf = require('./gulp.conf');
 const path = require('path');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const FailPlugin = require('webpack-fail-plugin');
 const autoprefixer = require('autoprefixer');
 
 module.exports = {
   module: {
-    preLoaders: [
+    loaders: [
+      {
+        test: /\.json$/,
+        loaders: [
+          'json-loader'
+        ]
+      },
       {
         test: /\.ts$/,
         exclude: /node_modules/,
-        loader: 'tslint'
-      }
-    ],
-
-    loaders: [
-      {
-        test: /.json$/,
-        loaders: [
-          'json'
-        ]
+        loader: 'tslint-loader',
+        enforce: 'pre'
       },
       {
         test: /\.css$/,
         loaders: [
-          'style',
-          'css',
-          'postcss'
+          'style-loader',
+          'css-loader',
+          'postcss-loader'
         ]
       },
       {
         test: /\.ts$/,
         exclude: /node_modules/,
         loaders: [
-          'ts'
+          'ts-loader'
         ]
       },
       {
-        test: /.html$/,
+        test: /\.html$/,
         loaders: [
-          'html'
+          'html-loader'
         ]
       }
     ]
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
+    FailPlugin,
     new HtmlWebpackPlugin({
       template: conf.path.src('index.html')
     }),
@@ -57,10 +57,21 @@ module.exports = {
     new webpack.ContextReplacementPlugin(
       /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
       conf.paths.src
-    )
+    ),
+    new webpack.LoaderOptionsPlugin({
+      options: {
+        postcss: () => [autoprefixer],
+        resolve: {},
+        ts: {
+          configFileName: 'tsconfig.json'
+        },
+        tslint: {
+          configuration: require('../tslint.json')
+        }
+      },
+      debug: true
+    })
   ],
-  postcss: () => [autoprefixer],
-  debug: true,
   devtool: 'source-map',
   output: {
     path: path.join(process.cwd(), conf.paths.tmp),
@@ -68,18 +79,11 @@ module.exports = {
   },
   resolve: {
     extensions: [
-      '',
       '.webpack.js',
       '.web.js',
       '.js',
       '.ts'
     ]
   },
-  entry: `./${conf.path.src('index')}`,
-  ts: {
-    configFileName: 'tsconfig.json'
-  },
-  tslint: {
-    configuration: require('../tslint.json')
-  }
+  entry: `./${conf.path.src('index')}`
 };

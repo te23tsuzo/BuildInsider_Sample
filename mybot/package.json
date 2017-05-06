@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "async": "^2.1.4",
-    "cassandra-driver": "^3.1.6",
+    "cassandra-driver": "^3.2.1",
     "config": "^1.24.0",
     "gulp": "^3.9.1",
     "gulp-develop-server": "^0.5.2",

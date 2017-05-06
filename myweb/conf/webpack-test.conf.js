@@ -2,32 +2,30 @@ const webpack = require('webpack');
 const conf = require('./gulp.conf');
 module.exports = {
   module: {
-    preLoaders: [
-      {
-        test: /\.ts$/,
-        exclude: /node_modules/,
-        loader: 'tslint'
-      }
-    ],
-
     loaders: [
       {
-        test: /.json$/,
+        test: /\.json$/,
         loaders: [
-          'json'
+          'json-loader'
         ]
       },
       {
         test: /\.ts$/,
         exclude: /node_modules/,
+        loader: 'tslint-loader',
+        enforce: 'pre'
+      },
+      {
+        test: /\.ts$/,
+        exclude: /node_modules/,
         loaders: [
-          'ts'
+          'ts-loader'
         ]
       },
       {
-        test: /.html$/,
+        test: /\.html$/,
         loaders: [
-          'html'
+          'html-loader'
         ]
       }
     ]
@@ -37,25 +35,26 @@ module.exports = {
       /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
       conf.paths.src
     ),
-    new webpack.DefinePlugin({
-      'process.env.POST_URL': '"http://localhost:8080/posts/"'
+    new webpack.LoaderOptionsPlugin({
+      options: {
+        resolve: {},
+        ts: {
+          configFileName: 'tsconfig.json'
+        },
+        tslint: {
+          configuration: require('../tslint.json')
+        }
+      },
+      debug: true
     })
   ],
-  debug: true,
   devtool: 'source-map',
   resolve: {
     extensions: [
-      '',
       '.webpack.js',
       '.web.js',
       '.js',
       '.ts'
     ]
-  },
-  ts: {
-    configFileName: 'tsconfig.json'
-  },
-  tslint: {
-    configuration: require('../tslint.json')
   }
 };

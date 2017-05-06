@@ -1,6 +1,6 @@
 .main {
-  width: 80%;
-  height: 100px;
+  word-wrap: normal;
+  display: inline;
 }
 
 .selected {
@@ -9,17 +9,18 @@
 }
 
 .list {
-  width: 60%;
-  height: 90px;
+  width: 80%;
+  height: 200px;
   overflow: scroll;
+  display: inline-block;
 }
 
 .detail {
   color: black;
   background: lightslategrey;
   vertical-align: top;
-  width: 40%;
-  height: 90px;
+  margin-left: 30px;
+  width: 60%;
 }
 
 .contents {
@@ -30,4 +31,18 @@
 .tags {
   color: deepskyblue;
   font-size: 10pt;
+}
+
+.item1 {
+  display: inline-block;
+  border: aqua;
+  width: 10%;
+}
+.item2 {
+  display: inline-block;
+  width: 40%;
+}
+.item3 {
+  display: inline-block;
+  width: 30%;
 }

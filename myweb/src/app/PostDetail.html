@@ -1,5 +1,5 @@
-<div *ngIf="post">
-  <dl>
+<span *ngIf="post">
+  <dl class="detail">
     <dt> contents: </dt>
     <dd class="contents"> {{post.content}}</dd>
     <dt> tags: </dt>
@@ -7,4 +7,4 @@
     <dt> date: </dt>
     <dd>{{post.created_at}}</dd>
   </dl>
-</div>
+</span>
