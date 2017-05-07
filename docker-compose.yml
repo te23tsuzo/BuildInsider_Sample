@@ -4,17 +4,25 @@ services:
     image: cassandra
     volumes:
      - /usr/local/lib/cassandra:/var/lib/cassandra
-    container_name: my-cassandra
+    container_name: cassandra
     mem_limit: 1G
  mybot:
-    image: mybot:dev
+    image: myregistry.azurecr.io/myapp/mybot
     container_name: mybot
+    mem_limit: 500M
     ports: 
      - "8080:8080" 
     depends_on:
      - cassandra
  myweb:
-    image: myweb:dev
+    image: myregistry.azurecr.io/myapp/myweb
     container_name: myweb
+    mem_limit: 800M
     ports: 
      - "3000:3000"
+    depends_on:
+     - mybot
+networks:
+  default:
+    external:
+       name: overlay-net
